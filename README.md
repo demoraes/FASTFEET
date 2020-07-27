@@ -1,4 +1,3 @@
-# FASTFEET
 <h1 align="center">
   <img alt="Fastfeet" title="Fastfeet" src="https://github.com/demoraes/FASTFEET/blob/master/img/logo.png" width="300px" />
 </h1>
