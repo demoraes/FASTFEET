@@ -3,26 +3,12 @@ module.exports = {
     es6: true,
     node: true,
   },
-  extends: [
-    'plugin:react/recommended',
-    'airbnb',
-    'prettier',
-  ],
-  globals: {
-    Atomics: 'readonly',
-    SharedArrayBuffer: 'readonly',
-  },
+  extends: ['airbnb-base', 'prettier'],
   parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
-    },
     ecmaVersion: 11,
     sourceType: 'module',
   },
-  plugins: [
-    'react',
-    'prettier',
-  ],
+  plugins: ['prettier'],
   rules: {
     'prettier/prettier': 'error',
     'class-methods-use-this': 'off',
