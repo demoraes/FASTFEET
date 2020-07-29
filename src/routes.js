@@ -13,7 +13,16 @@ routes.post('/sessions', SessionController.store);
 
 routes.use(authMiddlewares);
 
+/**
+ * Rotas do usuário
+ */
+
 routes.put('/users', UserController.update);
+
+/**
+ * Rotas recipients
+ */
 routes.post('/recipients', RecipientController.store);
+routes.put('/recipients/:id', RecipientController.update);
 
 export default routes;
