@@ -4,7 +4,7 @@ import Recipients from '../models/Recipients';
 class RecipientController {
   async store(req, res) {
     const schema = Yup.object().shape({
-      name: Yup.string(),
+      name: Yup.string().required(),
       street: Yup.string().required(),
       number: Yup.string().required(),
       state: Yup.string().required(),
