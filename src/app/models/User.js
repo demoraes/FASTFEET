@@ -29,6 +29,14 @@ class User extends Model {
   }
 
   /**
+   * Fazendo relacionamento
+   */
+
+  static associate(models) {
+    this.belongsTo(models.File, { foreignKey: 'avatar_id' });
+  }
+
+  /**
    * compara a senha do banco com a que está sendo digitada
    */
   checkPassword(password) {
