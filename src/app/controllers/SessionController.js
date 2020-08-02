@@ -6,6 +6,9 @@ import authConfig from '../../config/auth';
 
 class SessionController {
   async store(req, res) {
+    /**
+     * Validação dos campos, sendo obrigatório o preenchimento de email e senha
+     */
     const schema = Yup.object().shape({
       email: Yup.string().email().required(),
       password: Yup.string().required(),
@@ -17,6 +20,9 @@ class SessionController {
 
     const { email, password } = req.body;
 
+    /**
+     * Verifica se o usuário já existe
+     */
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
@@ -25,7 +31,7 @@ class SessionController {
 
     /**
      * chama o checkPassword que está no model User, onde é feito
-     * a comparação se senha está correta
+     * a comparação da senha
      */
     if (!(await user.checkPassword(password))) {
       return res.status(401).json({ error: 'Password does not match' });

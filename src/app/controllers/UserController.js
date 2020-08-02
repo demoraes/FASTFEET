@@ -4,7 +4,7 @@ import User from '../models/User';
 class UserController {
   async store(req, res) {
     /**
-     * Validações de campos
+     * Setando a validação dos campos
      */
     const schema = Yup.object().shape({
       email: Yup.string().email().required(),
@@ -12,8 +12,7 @@ class UserController {
     });
 
     /**
-     * Verifica de passou pelas validações, isValid retorna true
-     * por isso a negação com !
+     * Verifica se os campos são validos
      */
 
     if (!(await schema.isValid(req.body))) {
@@ -44,6 +43,11 @@ class UserController {
   }
 
   async update(req, res) {
+    /**
+     * Valida os campos
+     * campo password, quando informado é necessario informar tambem o oldPassword
+     * além de confirmar a senha nova no campo confirmPassword
+     */
     const schema = Yup.object().shape({
       name: Yup.string(),
       email: Yup.string().email(),
@@ -67,7 +71,8 @@ class UserController {
     const { email, oldPassword } = req.body;
 
     /**
-     * Verifica se o usuário com o respectivo id existe do banco
+     * Verifica se o usuário com o respectivo id existe do banco, o ID é pego
+     * através do token do usuário
      */
 
     const user = await User.findByPk(req.userId);
@@ -80,9 +85,17 @@ class UserController {
       }
     }
 
+    /**
+     * Somente sera feita checkPassword se for informado o oldPassword
+     */
+
     if (oldPassword && !(await user.checkPassword(oldPassword))) {
       return res.status(401).json({ error: 'Password does not match' });
     }
+
+    /**
+     * Atualiza o usuário usando a variavel "user", que foi declarada acima
+     */
 
     const { id, name } = await user.update(req.body);
 

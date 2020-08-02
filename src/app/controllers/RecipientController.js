@@ -3,6 +3,9 @@ import Recipients from '../models/Recipients';
 
 class RecipientController {
   async store(req, res) {
+    /**
+     * Validação dos campos, sendo obrigatório o preenchimento
+     */
     const schema = Yup.object().shape({
       name: Yup.string().required(),
       street: Yup.string().required(),
@@ -15,12 +18,19 @@ class RecipientController {
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Validation fails' });
     }
+    /**
+     * Criando recipient no banco
+     */
     const recipient = await Recipients.create(req.body);
 
     return res.json(recipient);
   }
 
   async update(req, res) {
+    /**
+     * Pega o id do recipient e depois atualiza
+     */
+
     const { id } = req.params;
     const { name } = req.body;
 

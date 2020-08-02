@@ -29,7 +29,7 @@ class User extends Model {
   }
 
   /**
-   * Fazendo relacionamento
+   * Fazendo relacionamento entre users e files, atraves do campo avatar_id
    */
 
   static associate(models) {
@@ -37,7 +37,7 @@ class User extends Model {
   }
 
   /**
-   * compara a senha do banco com a que está sendo digitada
+   * compara a senha que o usuário esta digitando com a senha que esta gravada no banco
    */
   checkPassword(password) {
     return bcrypt.compare(password, this.password_hash);
