@@ -15,8 +15,13 @@ class Database {
   }
 
   init() {
+    /**
+     * Conecta com o banco
+     */
     this.connection = new Sequelize(databaseConfig);
-
+    /**
+     * Carrega os models e relacionamentos
+     */
     models
       .map((model) => model.init(this.connection))
       .map(

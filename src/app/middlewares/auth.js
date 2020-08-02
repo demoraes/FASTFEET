@@ -18,7 +18,7 @@ export default async (req, res, next) => {
 
   /**
    * authHeader retorna um vetor -> [bearer,token]
-   * quando colocamos a virgula sem nada no primeiro índice
+   * quando colocamos a virgula sem nada no primeiro indice
    * ele omiti o valor que está no respectivo indice.
    */
   const [, token] = authHeader.split(' ');

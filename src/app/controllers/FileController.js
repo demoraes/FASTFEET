@@ -3,7 +3,7 @@ import File from '../models/File';
 class FileController {
   async store(req, res) {
     /**
-     * Recebendo da requisição os campos originalname e filename
+     * Recebendo da requisição dos campos originalname e filename
      */
     const { originalname: name, filename: path } = req.file;
 

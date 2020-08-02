@@ -1,4 +1,7 @@
 require('dotenv/config');
+/**
+ * Conexão com banco de dados usando variaveis de ambiente
+ */
 
 module.exports = {
   dialect: 'postgres',

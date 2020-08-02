@@ -16,6 +16,9 @@ const upload = multer(multerConfig);
 routes.post('/users', UserController.store);
 routes.post('/sessions', SessionController.store);
 
+/**
+ * Middleware de autenticação usando token
+ */
 routes.use(authMiddlewares);
 
 /**
@@ -30,6 +33,9 @@ routes.put('/users', UserController.update);
 routes.post('/recipients', RecipientController.store);
 routes.put('/recipients/:id', RecipientController.update);
 
+/**
+ * Rotas do deliveryman
+ */
 routes.post('/deliveryman', DeliverymanController.store);
 routes.put('/deliveryman/:id', DeliverymanController.update);
 routes.get('/deliveryman', DeliverymanController.index);

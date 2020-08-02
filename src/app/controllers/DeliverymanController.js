@@ -40,15 +40,17 @@ class DeliverymanController {
     return res.json(deliverymanUpdate);
   }
 
-  // async delete(req, res) {
-  //   const { id } = req.params;
+  async delete(req, res) {
+    const { id } = req.params;
 
-  //   const deliveryman = await Deliveryman.(req.params.id);
+    await Deliveryman.destroy({
+      where: {
+        id,
+      },
+    });
 
-  //   const deliverymanUpdate = await deliveryman.update(req.body);
-
-  //   return res.json(deliverymanUpdate);
-  // }
+    return res.json();
+  }
 }
 
 export default new DeliverymanController();
