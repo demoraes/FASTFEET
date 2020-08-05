@@ -1,4 +1,4 @@
-import * as Yup from 'yup';
+// import * as Yup from 'yup';
 import Order from '../models/Order';
 
 class OrderController {
@@ -9,16 +9,23 @@ class OrderController {
   }
 
   async store(req, res) {
-    const schema = Yup.object().shape({
-      product: Yup.string().required(),
-      start_date: Yup.string().required(),
-    });
+    // const schema = Yup.object().shape({
+    //   product: Yup.string().required(),
+    //   start_date: Yup.string().required(),
+    // });
 
-    if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails' });
-    }
-    console.log(req.body);
-    const order = await Order.create(req.body);
+    // if (!(await schema.isValid(req.body))) {
+    //   return res.status(400).json({ error: 'Validation fails' });
+    // }
+    const { signature_id, recipient_id, deliveryman_id } = req.query;
+    const { product, start_date } = req.body;
+    const order = await Order.create({
+      product,
+      start_date,
+      signature_id,
+      recipient_id,
+      deliveryman_id,
+    });
 
     return res.json(order);
   }
