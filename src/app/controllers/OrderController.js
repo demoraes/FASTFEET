@@ -27,6 +27,15 @@ class OrderController {
       deliveryman_id,
     });
 
+    const init = '08';
+    const finish = '18';
+
+    const [, date] = start_date.replace('T', ':').split(':');
+
+    if (date <= init || date > finish) {
+      return res.status(400).json({ error: 'Schedule is not permited' });
+    }
+
     return res.json(order);
   }
 
