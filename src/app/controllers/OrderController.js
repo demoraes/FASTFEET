@@ -17,7 +17,7 @@ class OrderController {
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Validation fails' });
     }
-
+    console.log(req.body);
     const order = await Order.create(req.body);
 
     return res.json(order);
