@@ -1,4 +1,4 @@
-// import * as Yup from 'yup';
+import * as Yup from 'yup';
 import Order from '../models/Order';
 
 class OrderController {
@@ -9,16 +9,27 @@ class OrderController {
   }
 
   async store(req, res) {
-    // const schema = Yup.object().shape({
-    //   product: Yup.string().required(),
-    //   start_date: Yup.string().required(),
-    // });
+    const schema = Yup.object().shape({
+      product: Yup.string().required(),
+      start_date: Yup.string().required(),
+    });
 
-    // if (!(await schema.isValid(req.body))) {
-    //   return res.status(400).json({ error: 'Validation fails' });
-    // }
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ error: 'Validation fails' });
+    }
+
     const { signature_id, recipient_id, deliveryman_id } = req.query;
     const { product, start_date } = req.body;
+
+    const initAttendance = '08';
+    const finishAttendance = '18';
+
+    const [, date] = start_date.replace('T', ':').split(':');
+
+    if (date <= initAttendance || date > finishAttendance) {
+      return res.status(400).json({ error: 'Schedule is not permited' });
+    }
+
     const order = await Order.create({
       product,
       start_date,
@@ -27,34 +38,32 @@ class OrderController {
       deliveryman_id,
     });
 
-    const init = '08';
-    const finish = '18';
-
-    const [, date] = start_date.replace('T', ':').split(':');
-
-    if (date <= init || date > finish) {
-      return res.status(400).json({ error: 'Schedule is not permited' });
-    }
-
     return res.json(order);
   }
 
   async update(req, res) {
-    const { name } = req.body;
+    const { id } = req.params;
+    const { signature_id, recipient_id, deliveryman_id } = req.query;
+    const { product, start_date } = req.body;
 
-    const deliveryman = await Order.findByPk(req.params.id);
+    const initAttendance = '08';
+    const finishAttendance = '18';
 
-    if (name !== deliveryman.name) {
-      const deliveryManExists = await Order.findOne({ where: { name } });
+    const [, date] = start_date.replace('T', ':').split(':');
 
-      if (deliveryManExists) {
-        return res.status(400).json({ error: 'Delivery already exists' });
-      }
+    if (date <= initAttendance || date > finishAttendance) {
+      return res.status(400).json({ error: 'Schedule is not permited' });
     }
 
-    const deliverymanUpdate = await deliveryman.update(req.body);
+    const order = await Order.create({
+      product,
+      start_date,
+      signature_id,
+      recipient_id,
+      deliveryman_id,
+    });
 
-    return res.json(deliverymanUpdate);
+    return res.json(order);
   }
 
   async delete(req, res) {
