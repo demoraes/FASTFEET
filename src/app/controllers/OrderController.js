@@ -1,14 +1,24 @@
 import * as Yup from 'yup';
+import { startOfHour, parseISO, isBefore } from 'date-fns';
 import Order from '../models/Order';
+import Notification from '../schemas/Notification';
+import Recipients from '../models/Recipients';
 
 class OrderController {
   async index(req, res) {
-    const deliverymans = await Order.findAll();
+    const { page = 1 } = req.query;
+    const ordes = await Order.findAll({
+      limit: 5,
+      offset: (page - 1) * 5,
+    });
 
-    return res.json(deliverymans);
+    return res.json(ordes);
   }
 
   async store(req, res) {
+    /**
+     * Validações de campos obrigatórios
+     */
     const schema = Yup.object().shape({
       product: Yup.string().required(),
       start_date: Yup.string().required(),
@@ -21,6 +31,9 @@ class OrderController {
     const { signature_id, recipient_id, deliveryman_id } = req.query;
     const { product, start_date } = req.body;
 
+    /**
+     * Verifica se a encomenda está sendo cadastrada entre as 08h e 18h
+     */
     const initAttendance = '08';
     const finishAttendance = '18';
 
@@ -30,12 +43,35 @@ class OrderController {
       return res.status(400).json({ error: 'Schedule is not permited' });
     }
 
+    /**
+     * Verifica se o horário da requisição é anterior ao horário atual
+     * caso seja, retorna error
+     */
+    const hourStart = startOfHour(parseISO(start_date));
+
+    if (isBefore(hourStart, new Date())) {
+      return res.status(400).json({ error: 'Past dates are not permitted' });
+    }
+
+    /**
+     * Criação da encomenda
+     */
     const order = await Order.create({
       product,
       start_date,
       signature_id,
       recipient_id,
       deliveryman_id,
+    });
+
+    /**
+     * Notificação ao entregador
+     */
+    const recipient = await Recipients.findByPk(recipient_id);
+
+    await Notification.create({
+      content: `Nova encomenda para ${recipient.name} para o dia 06 de agosto as 8:40h`,
+      deliveryman: deliveryman_id,
     });
 
     return res.json(order);
