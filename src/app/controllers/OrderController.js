@@ -83,7 +83,7 @@ class OrderController {
      * Notificação ao entregador
      */
     await Notification.create({
-      content: `Nova encomenda para ${recipient.name} para o ${formattedDate}`,
+      content: `Entregar ${product} para ${recipient.name}, ${formattedDate}`,
       deliveryman: deliveryman_id,
     });
 
