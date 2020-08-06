@@ -1,5 +1,6 @@
 import * as Yup from 'yup';
-import { startOfHour, parseISO, isBefore } from 'date-fns';
+import { startOfHour, parseISO, isBefore, format } from 'date-fns';
+import pt from 'date-fns/locale/pt';
 import Order from '../models/Order';
 import Notification from '../schemas/Notification';
 import Recipients from '../models/Recipients';
@@ -65,12 +66,24 @@ class OrderController {
     });
 
     /**
-     * Notificação ao entregador
+     * Pegando ID do destinatário para mostrar o nome dele para o entregador
      */
     const recipient = await Recipients.findByPk(recipient_id);
 
+    /**
+     * Formatação do horário e dia
+     */
+    const formattedDate = format(
+      hourStart,
+      "'dia' dd 'de' MMMM', às' H:mm'h'",
+      { locale: pt }
+    );
+
+    /**
+     * Notificação ao entregador
+     */
     await Notification.create({
-      content: `Nova encomenda para ${recipient.name} para o dia 06 de agosto as 8:40h`,
+      content: `Nova encomenda para ${recipient.name} para o ${formattedDate}`,
       deliveryman: deliveryman_id,
     });
 
