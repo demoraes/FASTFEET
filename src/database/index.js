@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize';
+import mongoose from 'mongoose';
 
 import User from '../app/models/User';
 import Recipients from '../app/models/Recipients';
@@ -13,6 +14,7 @@ const models = [User, Recipients, Deliveryman, Order, File];
 class Database {
   constructor() {
     this.init();
+    this.mongo();
   }
 
   init() {
@@ -28,6 +30,20 @@ class Database {
       .map(
         (model) => model.associate && model.associate(this.connection.models)
       );
+  }
+
+  /**
+   * Conexão com o mongodb
+   */
+  mongo() {
+    this.mongoConnerction = mongoose.connect(
+      'mongodb://localhost:27017/fastfeet',
+      {
+        useNewUrlParser: true,
+        useFindAndModify: true,
+        useUnifiedTopology: true,
+      }
+    );
   }
 }
 
