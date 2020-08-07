@@ -108,13 +108,19 @@ class OrderController {
   async delete(req, res) {
     const { id } = req.params;
 
+    const order = await Order.findByPk(id);
+
+    order.canceled_at = new Date();
+
+    await order.save();
+
     await Order.destroy({
       where: {
         id,
       },
     });
 
-    return res.json();
+    return res.json(order);
   }
 }
 
