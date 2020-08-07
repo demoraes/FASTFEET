@@ -52,6 +52,7 @@ routes.put('/order/:id', OrderController.update);
 routes.delete('/order/:id', OrderController.delete);
 
 routes.get('/notifications', NotificationsController.index);
+routes.put('/notifications/:id', NotificationsController.update);
 
 routes.post('/files', upload.single('file'), FileController.store);
 
