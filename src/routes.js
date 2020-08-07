@@ -8,6 +8,7 @@ import RecipientController from './app/controllers/RecipientController';
 import FileController from './app/controllers/FileController';
 import DeliverymanController from './app/controllers/DeliverymanController';
 import OrderController from './app/controllers/OrderController';
+import NotificationsController from './app/controllers/NotificationsController';
 
 import authMiddlewares from './app/middlewares/auth';
 
@@ -49,6 +50,8 @@ routes.get('/order', OrderController.index);
 routes.post('/order', OrderController.store);
 routes.put('/order/:id', OrderController.update);
 routes.delete('/order/:id', OrderController.delete);
+
+routes.get('/notifications', NotificationsController.index);
 
 routes.post('/files', upload.single('file'), FileController.store);
 
