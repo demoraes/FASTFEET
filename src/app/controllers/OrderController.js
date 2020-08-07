@@ -101,7 +101,17 @@ class OrderController {
     await Mail.sendMail({
       to: `${name} <${email}>`,
       subject: 'Nova encomenda',
-      text: 'Encomenda feit',
+      template: 'cancellation',
+      context: {
+        /**
+         * Substituir pelas informações do meu app
+         */
+        provider: email,
+        user: name,
+        date: format(date, "'dia' dd 'de' MMMM', às' H:mm'h'", {
+          locale: pt,
+        }),
+      },
     });
 
     return res.json(order);
