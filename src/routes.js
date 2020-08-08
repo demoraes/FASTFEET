@@ -9,6 +9,7 @@ import FileController from './app/controllers/FileController';
 import DeliverymanController from './app/controllers/DeliverymanController';
 import OrderController from './app/controllers/OrderController';
 import NotificationsController from './app/controllers/NotificationsController';
+import ViewDeliverymanController from './app/controllers/ViewDeliverymanController';
 
 import authMiddlewares from './app/middlewares/auth';
 
@@ -42,6 +43,12 @@ routes.post('/deliveryman', DeliverymanController.store);
 routes.put('/deliveryman/:id', DeliverymanController.update);
 routes.get('/deliveryman', DeliverymanController.index);
 routes.delete('/deliveryman/:id', DeliverymanController.delete);
+
+/**
+ * Rotas do ViewDeliveryman
+ */
+routes.get('/deliveryman/:id/deliveries', ViewDeliverymanController.index);
+routes.get('/deliveryman/:id/handed', ViewDeliverymanController.show);
 
 /**
  * Order Controller
