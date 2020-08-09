@@ -10,6 +10,7 @@ import DeliverymanController from './app/controllers/DeliverymanController';
 import OrderController from './app/controllers/OrderController';
 import NotificationsController from './app/controllers/NotificationsController';
 import ViewDeliverymanController from './app/controllers/ViewDeliverymanController';
+import DeliveryProblemController from './app/controllers/DeliveryProblemController';
 
 import authMiddlewares from './app/middlewares/auth';
 
@@ -51,6 +52,11 @@ routes.get('/deliveryman/:id/deliveries', ViewDeliverymanController.index);
 routes.get('/deliveryman/:id/handed', ViewDeliverymanController.show);
 routes.post('/deliveryman/:id/startDelivered', ViewDeliverymanController.store);
 routes.put('/deliveryman/:id/delivered', ViewDeliverymanController.update);
+
+/**
+ * Rotas DeliveryProblem
+ */
+routes.post('/deliveryProblem', DeliveryProblemController.store);
 
 /**
  * Order Controller
