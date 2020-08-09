@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { startOfHour, parseISO, isBefore, format } from 'date-fns';
+import { parseISO, format } from 'date-fns';
 import pt from 'date-fns/locale/pt';
 import Order from '../models/Order';
 import Notification from '../schemas/Notification';
@@ -14,6 +14,19 @@ class OrderController {
     const ordes = await Order.findAll({
       limit: 5,
       offset: (page - 1) * 5,
+      attributes: ['id', 'product'],
+      include: [
+        {
+          model: Deliveryman,
+          as: 'deliveryman',
+          attributes: ['id', 'name'],
+        },
+        {
+          model: Recipients,
+          as: 'recipient',
+          attributes: ['id', 'name'],
+        },
+      ],
     });
 
     return res.json(ordes);
@@ -25,7 +38,6 @@ class OrderController {
      */
     const schema = Yup.object().shape({
       product: Yup.string().required(),
-      start_date: Yup.string().required(),
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -33,36 +45,13 @@ class OrderController {
     }
 
     const { signature_id, recipient_id, deliveryman_id } = req.query;
-    const { product, start_date } = req.body;
-
-    /**
-     * Verifica se a encomenda está sendo cadastrada entre as 08h e 18h
-     */
-    const initAttendance = '08';
-    const finishAttendance = '18';
-
-    const [, date] = start_date.replace('T', ':').split(':');
-
-    if (date <= initAttendance || date > finishAttendance) {
-      return res.status(400).json({ error: 'Schedule is not permited' });
-    }
-
-    /**
-     * Verifica se o horário da requisição é anterior ao horário atual
-     * caso seja, retorna error
-     */
-    const hourStart = startOfHour(parseISO(start_date));
-
-    if (isBefore(hourStart, new Date())) {
-      return res.status(400).json({ error: 'Past dates are not permitted' });
-    }
+    const { product, date } = req.body;
 
     /**
      * Criação da encomenda
      */
     const order = await Order.create({
       product,
-      start_date,
       signature_id,
       recipient_id,
       deliveryman_id,
@@ -77,9 +66,11 @@ class OrderController {
      * Formatação do horário e dia
      */
     const formattedDate = format(
-      hourStart,
+      parseISO(date),
       "'dia' dd 'de' MMMM', às' H:mm'h'",
-      { locale: pt }
+      {
+        locale: pt,
+      }
     );
 
     /**
@@ -98,21 +89,21 @@ class OrderController {
     /**
      * Enviando email para o entregador
      */
-    await Mail.sendMail({
-      to: `${name} <${email}>`,
-      subject: 'Nova encomenda',
-      template: 'cancellation',
-      context: {
-        /**
-         * Substituir pelas informações do meu app
-         */
-        provider: email,
-        user: name,
-        date: format(date, "'dia' dd 'de' MMMM', às' H:mm'h'", {
-          locale: pt,
-        }),
-      },
-    });
+    // await Mail.sendMail({
+    //   to: `${name} <${email}>`,
+    //   subject: 'Nova encomenda',
+    //   template: 'cancellation',
+    //   context: {
+    //     /**
+    //      * Substituir pelas informações do meu app
+    //      */
+    //     provider: email,
+    //     user: name,
+    //     date: format(parseISO(date), "'dia' dd 'de' MMMM', às' H:mm'h'", {
+    //       locale: pt,
+    //     }),
+    //   },
+    // });
 
     return res.json(order);
   }

@@ -49,6 +49,8 @@ routes.delete('/deliveryman/:id', DeliverymanController.delete);
  */
 routes.get('/deliveryman/:id/deliveries', ViewDeliverymanController.index);
 routes.get('/deliveryman/:id/handed', ViewDeliverymanController.show);
+routes.post('/deliveryman/:id/startDelivered', ViewDeliverymanController.store);
+routes.put('/deliveryman/:id/delivered', ViewDeliverymanController.update);
 
 /**
  * Order Controller

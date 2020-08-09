@@ -1,5 +1,5 @@
-import * as Yup from 'yup';
-import Deliveryman from '../models/Deliveryman';
+import { Op } from 'sequelize';
+import { startOfHour, parseISO, isBefore } from 'date-fns';
 import Order from '../models/Order';
 
 class DeliverymanController {
@@ -22,57 +22,71 @@ class DeliverymanController {
 
     const { id } = req.params;
 
-    const recipients = await Order.findAll({
+    const orders = await Order.findAll({
       limit: 5,
       offset: (page - 1) * 5,
-      where: { deliveryman_id: id, end_date: true },
-    });
-
-    return res.json(recipients);
-  }
-
-  async store(req, res) {
-    const schema = Yup.object().shape({
-      name: Yup.string().required(),
-      email: Yup.string().email().required(),
-    });
-
-    if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails' });
-    }
-    const deliveryman = await Deliveryman.create(req.body);
-
-    return res.json(deliveryman);
-  }
-
-  async update(req, res) {
-    const { name } = req.body;
-
-    const deliveryman = await Deliveryman.findByPk(req.params.id);
-
-    if (name !== deliveryman.name) {
-      const deliveryManExists = await Deliveryman.findOne({ where: { name } });
-
-      if (deliveryManExists) {
-        return res.status(400).json({ error: 'Delivery already exists' });
-      }
-    }
-
-    const deliverymanUpdate = await deliveryman.update(req.body);
-
-    return res.json(deliverymanUpdate);
-  }
-
-  async delete(req, res) {
-    const { id } = req.params;
-
-    await Deliveryman.destroy({
       where: {
-        id,
+        deliveryman_id: id,
+        end_date: {
+          [Op.ne]: null, // valor diferente de null
+        },
       },
     });
 
-    return res.json();
+    return res.json(orders);
+  }
+
+  async store(req, res) {
+    const { id } = req.params;
+    const { order, start_date } = req.query;
+
+    /**
+     * Verifica se a retirada está sendo entre as 08h e 18h
+     */
+    const initAttendance = '08';
+    const finishAttendance = '18';
+
+    const [, date] = start_date.replace('T', ':').split(':');
+
+    if (date <= initAttendance || date > finishAttendance) {
+      return res.status(400).json({ error: 'Schedule is not permited' });
+    }
+
+    /**
+     * Verifica se o horário da retirada é anterior ao horário atual
+     * caso seja, retorna error
+     */
+    const hourStart = startOfHour(parseISO(start_date));
+
+    if (isBefore(hourStart, new Date())) {
+      return res.status(400).json({ error: 'Past dates are not permitted' });
+    }
+
+    const orderDelivery = await Order.findOne({
+      where: { id: order, deliveryman_id: id },
+    });
+
+    const updateOrderDelivery = await orderDelivery.update({ start_date });
+
+    return res.json(updateOrderDelivery);
+  }
+
+  async update(req, res) {
+    const { id } = req.params;
+    const { signature_id } = req.query;
+
+    const endDelivered = await Order.findByPk(id);
+
+    if (endDelivered.start_date === null) {
+      return res.status(400).json({ error: 'Delivery not initiated' });
+    }
+
+    endDelivered.end_date = new Date();
+    endDelivered.signature_id = signature_id;
+
+    await endDelivered.save();
+
+    return res.json(endDelivered);
   }
 }
 
