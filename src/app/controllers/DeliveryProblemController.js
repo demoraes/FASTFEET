@@ -1,5 +1,9 @@
 import * as Yup from 'yup';
+import { format } from 'date-fns';
+import pt from 'date-fns/locale/pt';
 import DeliveryProblem from '../models/DeliveryProblem';
+import Deliveryman from '../models/Deliveryman';
+import Recipients from '../models/Recipients';
 import Order from '../models/Order';
 import User from '../models/User';
 
@@ -73,21 +77,28 @@ class DeliveryProblemController {
   }
 
   async update(req, res) {
-    const { name } = req.body;
+    const { delivery_id } = req.headers;
+    const { id } = req.params;
 
-    const deliveryman = await Deliveryman.findByPk(req.params.id);
+    const schema = Yup.object().shape({
+      description: Yup.string().required(),
+    });
 
-    if (name !== deliveryman.name) {
-      const deliveryManExists = await Deliveryman.findOne({ where: { name } });
-
-      if (deliveryManExists) {
-        return res.status(400).json({ error: 'Delivery already exists' });
-      }
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ error: 'Validation fails' });
     }
 
-    const deliverymanUpdate = await deliveryman.update(req.body);
+    const delivery = await Order.findOne({ where: { id: delivery_id } });
 
-    return res.json(deliverymanUpdate);
+    if (!delivery) {
+      return res.status(400).json({ error: 'Delivery not exists' });
+    }
+
+    const deliveryProblem = await DeliveryProblem.findByPk(id);
+
+    const updateDeliveryProblem = await deliveryProblem.update(req.body);
+
+    return res.json(updateDeliveryProblem);
   }
 
   async delete(req, res) {
@@ -103,7 +114,20 @@ class DeliveryProblemController {
       });
     }
 
-    const order = await Order.findByPk(id);
+    const order = await Order.findByPk(id, {
+      include: [
+        {
+          model: Deliveryman,
+          as: 'deliveryman',
+          attributes: ['id', 'name'],
+        },
+        {
+          model: Recipients,
+          as: 'recipient',
+          attributes: ['id', 'name'],
+        },
+      ],
+    });
 
     order.canceled_at = new Date();
 
@@ -112,18 +136,27 @@ class DeliveryProblemController {
     /**
      * Busca pelo administrador no banco
      */
-    const { name, email } = await User.findOne({
+    const user = await User.findOne({
       where: { name: 'admin' },
     });
+
+    const date = new Date();
 
     /**
      * Envia email para o administrador, informando que a encomenda foi cancelada
      */
     await Mail.sendMail({
-      to: `${name} <${email}>`,
+      to: `${user.name} <${user.email}>`,
       subject: 'Encomenda cancelada',
-      template: 'delivery',
-      context: {},
+      template: 'cancellation',
+      context: {
+        user: user.name,
+        deliveryman: order.deliveryman.name,
+        recipient: order.recipient.name,
+        date: format(date, "'dia' dd 'de' MMMM', às' H:mm'h'", {
+          locale: pt,
+        }),
+      },
     });
 
     return res.json(order);

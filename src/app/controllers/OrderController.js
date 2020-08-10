@@ -94,9 +94,6 @@ class OrderController {
       subject: 'Nova encomenda',
       template: 'delivery',
       context: {
-        /**
-         * Substituir pelas informações do meu app
-         */
         deliveryman: name,
         recipient: recipient.name,
         date: format(parseISO(date), "'dia' dd 'de' MMMM', às' H:mm'h'", {
