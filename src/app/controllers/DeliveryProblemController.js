@@ -1,8 +1,48 @@
 import * as Yup from 'yup';
-import DeliveryProblem from '../schemas/DeliveryProblem';
+import DeliveryProblem from '../models/DeliveryProblem';
 import Order from '../models/Order';
 
 class DeliveryProblemController {
+  async index(req, res) {
+    const { page = 1 } = req.query;
+
+    const delivery = await DeliveryProblem.findAll({
+      limit: 10,
+      offset: (page - 1) * 6,
+      attributes: ['id', 'description'],
+      include: [
+        {
+          model: Order,
+          as: 'delivery',
+          attributes: ['id', 'product'],
+        },
+      ],
+    });
+
+    return res.json(delivery);
+  }
+
+  async show(req, res) {
+    const { page = 1 } = req.query;
+    const { id } = req.params;
+
+    const delivery = await DeliveryProblem.findAll({
+      where: { delivery_id: id },
+      limit: 10,
+      offset: (page - 1) * 6,
+      attributes: ['id', 'description'],
+      include: [
+        {
+          model: Order,
+          as: 'delivery',
+          attributes: ['id', 'product'],
+        },
+      ],
+    });
+
+    return res.json(delivery);
+  }
+
   async store(req, res) {
     const { delivery_id } = req.headers;
     const { description } = req.body;
@@ -50,9 +90,19 @@ class DeliveryProblemController {
   async delete(req, res) {
     const { id } = req.params;
 
-    await Deliveryman.destroy({
+    const delivery = await DeliveryProblem.findOne({
+      where: { delivery_id: id },
+    });
+
+    if (!delivery) {
+      return res.status(400).json({
+        error: 'Smooth delivery, please advise the reason for cancellation',
+      });
+    }
+
+    await Order.destroy({
       where: {
-        id,
+        delivery_id: id,
       },
     });
 

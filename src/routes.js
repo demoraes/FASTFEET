@@ -56,7 +56,13 @@ routes.put('/deliveryman/:id/delivered', ViewDeliverymanController.update);
 /**
  * Rotas DeliveryProblem
  */
+routes.get('/deliveryProblem', DeliveryProblemController.index);
+routes.get('/deliveryProblem/:id/problems', DeliveryProblemController.show);
 routes.post('/deliveryProblem', DeliveryProblemController.store);
+routes.delete(
+  '/deliveryProblem/:id/cancel_delivery',
+  DeliveryProblemController.delete
+);
 
 /**
  * Order Controller
