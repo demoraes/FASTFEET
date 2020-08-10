@@ -89,21 +89,21 @@ class OrderController {
     /**
      * Enviando email para o entregador
      */
-    // await Mail.sendMail({
-    //   to: `${name} <${email}>`,
-    //   subject: 'Nova encomenda',
-    //   template: 'cancellation',
-    //   context: {
-    //     /**
-    //      * Substituir pelas informações do meu app
-    //      */
-    //     provider: email,
-    //     user: name,
-    //     date: format(parseISO(date), "'dia' dd 'de' MMMM', às' H:mm'h'", {
-    //       locale: pt,
-    //     }),
-    //   },
-    // });
+    await Mail.sendMail({
+      to: `${name} <${email}>`,
+      subject: 'Nova encomenda',
+      template: 'delivery',
+      context: {
+        /**
+         * Substituir pelas informações do meu app
+         */
+        deliveryman: name,
+        recipient: recipient.name,
+        date: format(parseISO(date), "'dia' dd 'de' MMMM', às' H:mm'h'", {
+          locale: pt,
+        }),
+      },
+    });
 
     return res.json(order);
   }
@@ -125,21 +125,12 @@ class OrderController {
 
   async delete(req, res) {
     const { id } = req.params;
-    const { deliveryman_id } = req.query;
 
     const order = await Order.findByPk(id);
 
     order.canceled_at = new Date();
 
     await order.save();
-
-    const { name, email } = await Deliveryman.findByPk(deliveryman_id);
-
-    await Mail.sendMail({
-      to: `${name} <${email}>`,
-      subject: 'Nova encomenda',
-      text: 'Encomenda deletada',
-    });
 
     await Order.destroy({
       where: {

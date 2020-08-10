@@ -1,6 +1,9 @@
 import * as Yup from 'yup';
 import DeliveryProblem from '../models/DeliveryProblem';
 import Order from '../models/Order';
+import User from '../models/User';
+
+import Mail from '../../lib/Mail';
 
 class DeliveryProblemController {
   async index(req, res) {
@@ -100,13 +103,30 @@ class DeliveryProblemController {
       });
     }
 
-    await Order.destroy({
-      where: {
-        delivery_id: id,
-      },
+    const order = await Order.findByPk(id);
+
+    order.canceled_at = new Date();
+
+    await order.save();
+
+    /**
+     * Busca pelo administrador no banco
+     */
+    const { name, email } = await User.findOne({
+      where: { name: 'admin' },
     });
 
-    return res.json();
+    /**
+     * Envia email para o administrador, informando que a encomenda foi cancelada
+     */
+    await Mail.sendMail({
+      to: `${name} <${email}>`,
+      subject: 'Encomenda cancelada',
+      template: 'delivery',
+      context: {},
+    });
+
+    return res.json(order);
   }
 }
 
