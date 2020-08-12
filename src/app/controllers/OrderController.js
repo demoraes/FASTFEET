@@ -6,7 +6,8 @@ import Notification from '../schemas/Notification';
 import Recipients from '../models/Recipients';
 import Deliveryman from '../models/Deliveryman';
 
-import Mail from '../../lib/Mail';
+import Delivery from '../jobs/Delivery';
+import Queue from '../../lib/Queue';
 
 class OrderController {
   async index(req, res) {
@@ -89,17 +90,11 @@ class OrderController {
     /**
      * Enviando email para o entregador
      */
-    await Mail.sendMail({
-      to: `${name} <${email}>`,
-      subject: 'Nova encomenda',
-      template: 'delivery',
-      context: {
-        deliveryman: name,
-        recipient: recipient.name,
-        date: format(parseISO(date), "'dia' dd 'de' MMMM', às' H:mm'h'", {
-          locale: pt,
-        }),
-      },
+    await Queue.add(Delivery.key, {
+      name,
+      email,
+      recipient,
+      date,
     });
 
     return res.json(order);
@@ -107,16 +102,19 @@ class OrderController {
 
   async update(req, res) {
     const { id } = req.params;
-    const { end_date, canceled_at } = req.body;
+
+    const verify = await Order.findOne({
+      where: { id },
+    });
+
+    if (!verify) {
+      return res.status(400).json({ error: 'Delivery not exists' });
+    }
 
     const order = await Order.findByPk(id);
 
-    if (canceled_at) {
-      const orderUpdate = await order.update({ canceled_at });
+    const orderUpdate = await order.update(req.body);
 
-      return res.json(orderUpdate);
-    }
-    const orderUpdate = await order.update({ end_date });
     return res.json(orderUpdate);
   }
 

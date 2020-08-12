@@ -8,6 +8,10 @@ class DeliverymanController {
 
     const { id } = req.params;
 
+    /**
+     * Pesquisa todas encomendas do respectivo entregador,
+     * que não estejam cancelados ou entregues.
+     */
     const recipients = await Order.findAll({
       limit: 5,
       offset: (page - 1) * 5,
@@ -22,6 +26,9 @@ class DeliverymanController {
 
     const { id } = req.params;
 
+    /**
+     * Lista as entregas feitas pelo entregador
+     */
     const orders = await Order.findAll({
       limit: 5,
       offset: (page - 1) * 5,
@@ -62,6 +69,10 @@ class DeliverymanController {
       return res.status(400).json({ error: 'Past dates are not permitted' });
     }
 
+    /**
+     * Encontra a encomenda do respectivo
+     * entregador e preenche o campo start_date
+     */
     const orderDelivery = await Order.findOne({
       where: { id: order, deliveryman_id: id },
     });
@@ -75,6 +86,9 @@ class DeliverymanController {
     const { id } = req.params;
     const { signature_id } = req.query;
 
+    /**
+     * Verifica se foi feita a retirada da encomenda antes de cancelar
+     */
     const endDelivered = await Order.findByPk(id);
 
     if (endDelivered.start_date === null) {
