@@ -4,6 +4,11 @@ module.exports = {
     es2020: true,
   },
   extends: ['plugin:react/recommended', 'airbnb', 'prettier', 'prettier/react'],
+  globals: {
+    Atomics: 'readonly',
+    ShareArrayBuffer: 'readonly',
+    __DEV__: true,
+  },
   parser: 'babel-eslint',
   parserOptions: {
     ecmaFeatures: {
@@ -12,12 +17,12 @@ module.exports = {
     ecmaVersion: 11,
     sourceType: 'module',
   },
-  plugins: ['react', 'prettier', 'jsx-a11y', 'import', 'react-hooks'],
+  plugins: ['react', 'jsx-a11y', 'import', 'react-hooks', 'prettier'],
   rules: {
     'prettier/prettier': 'error',
     'react/jsx-filename-extension': ['warn', { extensions: ['.jsx', '.js'] }],
     'import/prefer-default-export': 'off',
-    'no-anused-vars': ['error', { argsIngonerPattern: '^_' }],
+    'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     'react/jsx-one-expression-per-line': 'off',
     'global-require': 'off',
     'react-native/no-raw-text': 'off',
@@ -26,6 +31,6 @@ module.exports = {
     camelcase: 'off',
     'no-console': ['error', { allow: ['tron'] }],
     'react-hooks/rules-of-hooks': 'error',
-    'react-hooks/exhaustive-deps': 'warn'
+    'react-hooks/exhaustive-deps': 'warn',
   },
 };
