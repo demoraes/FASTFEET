@@ -1,7 +1,36 @@
 import * as Yup from 'yup';
+import { Op } from 'sequelize';
 import Recipients from '../models/Recipients';
 
 class RecipientController {
+  async index(req, res) {
+    const { page = 1, name_query } = req.query;
+
+    if (!name_query) {
+      const recipients = await Recipients.findAll({
+        limit: 5,
+        offset: (page - 1) * 5,
+      });
+
+      return res.json(recipients);
+    } else {
+      const recipients = await Recipients.findAll({
+        limit: 5,
+        offset: (page - 1) * 5,
+        where: {
+          name: {
+            [Op.iLike]: name_query
+          }
+        },
+      });
+
+      return res.json(recipients);
+    }
+
+
+
+  }
+
   async store(req, res) {
     /**
      * Validação dos campos, sendo obrigatório o preenchimento

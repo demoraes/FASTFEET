@@ -34,6 +34,7 @@ routes.put('/users', UserController.update);
 /**
  * Rotas recipients
  */
+routes.get('/recipients', RecipientController.index);
 routes.post('/recipients', RecipientController.store);
 routes.put('/recipients/:id', RecipientController.update);
 

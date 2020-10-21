@@ -1,11 +1,26 @@
 import * as Yup from 'yup';
+import { Op } from 'sequelize';
 import Deliveryman from '../models/Deliveryman';
 
 class DeliverymanController {
   async index(req, res) {
-    const deliverymans = await Deliveryman.findAll();
+    const { deliveryman_query } = req.query;
 
-    return res.json(deliverymans);
+    if (!deliveryman_query) {
+      const deliverymans = await Deliveryman.findAll();
+
+      return res.json(deliverymans);
+    }else{
+      const deliverymans = await Deliveryman.findAll({
+        where: {
+          name: {
+            [Op.iLike]: deliveryman_query
+          }
+        },
+      });
+
+      return res.json(deliverymans);
+    }
   }
 
   async store(req, res) {

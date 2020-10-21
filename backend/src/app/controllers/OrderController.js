@@ -2,6 +2,7 @@ import * as Yup from 'yup';
 import { parseISO, format } from 'date-fns';
 import pt from 'date-fns/locale/pt';
 import Order from '../models/Order';
+import { Op } from 'sequelize';
 import Notification from '../schemas/Notification';
 import Recipients from '../models/Recipients';
 import Deliveryman from '../models/Deliveryman';
@@ -11,26 +12,54 @@ import Queue from '../../lib/Queue';
 
 class OrderController {
   async index(req, res) {
-    const { page = 1 } = req.query;
-    const ordes = await Order.findAll({
-      limit: 5,
-      offset: (page - 1) * 5,
-      attributes: ['id', 'product'],
-      include: [
-        {
-          model: Deliveryman,
-          as: 'deliveryman',
-          attributes: ['id', 'name'],
-        },
-        {
-          model: Recipients,
-          as: 'recipient',
-          attributes: ['id', 'name'],
-        },
-      ],
-    });
+    const { page = 1, query_product } = req.query;
 
-    return res.json(ordes);
+    if (!query_product) {
+      const ordes = await Order.findAll({
+        limit: 5,
+        offset: (page - 1) * 5,
+        attributes: ['id', 'product'],
+        include: [
+          {
+            model: Deliveryman,
+            as: 'deliveryman',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: Recipients,
+            as: 'recipient',
+            attributes: ['id', 'name'],
+          },
+        ],
+      });
+
+      return res.json(ordes);
+    } else {
+      const ordes = await Order.findAll({
+        limit: 5,
+        offset: (page - 1) * 5,
+        attributes: ['id', 'product'],
+        include: [
+          {
+            model: Deliveryman,
+            as: 'deliveryman',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: Recipients,
+            as: 'recipient',
+            attributes: ['id', 'name'],
+          },
+        ],
+        where: {
+          product: {
+            [Op.iLike]: query_product
+          }
+        },
+      });
+
+      return res.json(ordes);
+    }
   }
 
   async store(req, res) {
