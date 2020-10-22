@@ -15,17 +15,17 @@ export default function Header() {
     <Container>
       <Content>
         <nav>
-          <img src={logo} alt="GoBarber" />
-          <Link to="/dashboard">ENCOMENDAS</Link>
-          <Link to="/dashboard">ENTREGADORES</Link>
-          <Link to="/dashboard">DESTINATÁRIOS</Link>
-          <Link to="/dashboard">PROBLEMAS</Link>
+          <img src={logo} alt="FastFeet" />
+          <Link to="/orders">ENCOMENDAS</Link>
+          <Link to="/deliveryman">ENTREGADORES</Link>
+          <Link to="/recipients">DESTINATÁRIOS</Link>
+          <Link to="/problems">PROBLEMAS</Link>
         </nav>
 
         <aside>
           <Profile>
             <div>
-              <strong>Admin FastFeet</strong>
+              <Link to="/profile">Admin FastFeet</Link>
               <button type="button">sair do sistema</button>
             </div>
           </Profile>

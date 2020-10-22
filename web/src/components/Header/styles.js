@@ -49,8 +49,9 @@ export const Profile = styled.div`
     text-align: right;
     margin-right: 10px;
 
-    strong {
+    a {
       display: block;
+      font-weight: bold;
       color: #666666;
     }
 

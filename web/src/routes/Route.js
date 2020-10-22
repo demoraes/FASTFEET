@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
@@ -19,7 +20,7 @@ export default function RouteWrapper({
   }
 
   if (signed && !isPrivate) {
-    return <Redirect from="/#/dashboard" to="/dashboard" />;
+    return <Redirect from="/#/orders" to="/orders" />;
   }
 
   const Layout = signed ? DefaultLayout : AuthLayout;

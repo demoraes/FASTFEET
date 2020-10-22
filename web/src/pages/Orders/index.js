@@ -6,10 +6,10 @@ import React from 'react';
 
 import { Container } from './styles';
 
-export default function Dashboard() {
+export default function Orders() {
   return (
     <Container>
-      <h1>Dashboard</h1>
+      <h1>Orders</h1>
     </Container>
   );
 }
