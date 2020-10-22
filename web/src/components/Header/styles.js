@@ -31,6 +31,11 @@ export const Content = styled.div`
       color: #444444;
       font-size: 12px;
       padding-right: 15px;
+      transition: 0.2s;
+    }
+
+    a:hover {
+      color: #7159c1;
     }
   }
 
