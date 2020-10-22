@@ -10,21 +10,21 @@ export const Wrapper = styled.div`
 `;
 
 export const Content = styled.div`
-  width: 100%;
+  width: 50%;
   max-width: 400px;
   text-align: center;
 
   form {
     display: flex;
     flex-direction: column;
-    margin-top: 30px;
     background: #ffffff;
     box-shadow: 0px 0px 10px #00000033;
     border-radius: 4px;
     padding: 50px;
 
     img {
-      width: 100%;
+      align-self: center;
+      width: 80%;
       height: 100%;
       padding-bottom: 25px;
     }
@@ -33,6 +33,7 @@ export const Content = styled.div`
       text-align: left;
       letter-spacing: 0px;
       color: #444444;
+      margin-bottom: 5px;
       opacity: 1;
     }
 
