@@ -25,30 +25,18 @@ export default function SignIn() {
   }
 
   return (
-    <>
-      <Form onSubmit={handleSubmit} schema={schema}>
-        <img src={logo} alt="GoBarber" />
+    <Form schema={schema} onSubmit={handleSubmit}>
+      <img src={logo} alt="GoBarber" />
 
-        <label htmlFor="email">SEU E-MAIL</label>
-        <Input
-          name="email"
-          type="email"
-          id="email"
-          placeholder="exemplo@gmail.com"
-        />
+      <label htmlFor="email">SEU E-MAIL</label>
+      <Input name="email" type="email" placeholder="exemplo@gmail.com" />
 
-        <label htmlFor="password">SUA SENHA</label>
-        <Input
-          name="password"
-          type="password"
-          id="password"
-          placeholder="*********"
-        />
+      <label htmlFor="password">SUA SENHA</label>
+      <Input name="password" type="password" placeholder="*********" />
 
-        <button type="submit">
-          {loading ? <FaSpinner color="#fff" size={14} /> : 'Entrar no sistema'}
-        </button>
-      </Form>
-    </>
+      <button type="submit">
+        {loading ? <FaSpinner color="#fff" size={14} /> : 'Entrar no sistema'}
+      </button>
+    </Form>
   );
 }
