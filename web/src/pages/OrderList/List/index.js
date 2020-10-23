@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { TableContainer } from '../../components/Table';
+import { TableContainer } from '../../../components/Table';
+import Action from './Action';
 
 // import { Container } from './styles';
-
-export default function Orders() {
+function OrderList() {
   return (
     <TableContainer>
       <thead>
@@ -34,9 +34,11 @@ export default function Orders() {
           <td>Rio do sul</td>
           <td>Santa catarina</td>
           <td>dwd</td>
-          <td>dwd</td>
+          <Action />
         </tr>
       </tbody>
     </TableContainer>
   );
 }
+
+export default OrderList;
