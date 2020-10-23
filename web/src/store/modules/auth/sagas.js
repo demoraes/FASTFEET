@@ -18,7 +18,7 @@ export function* signIn({ payload }) {
 
     if (!user.profile) {
       toast.error('Usuário não é adminstrador');
-      return;
+      yield put(signFailure());
     }
 
     api.defaults.headers.Authorization = `Bearer ${token}`;
@@ -27,6 +27,7 @@ export function* signIn({ payload }) {
     toast.success('VC conseguiu, caraca se é o bixao memo em');
     // history.push('/orders');
   } catch (err) {
+    console.tron.log(err);
     toast.error('Falha na autenticação, verifique seus dados');
     yield put(signFailure());
   }
