@@ -13,22 +13,18 @@ class RecipientController {
       });
 
       return res.json(recipients);
-    } else {
-      const recipients = await Recipients.findAll({
-        limit: 5,
-        offset: (page - 1) * 5,
-        where: {
-          name: {
-            [Op.iLike]: name_query
-          }
-        },
-      });
-
-      return res.json(recipients);
     }
+    const recipients = await Recipients.findAll({
+      limit: 5,
+      offset: (page - 1) * 5,
+      where: {
+        name: {
+          [Op.iLike]: name_query,
+        },
+      },
+    });
 
-
-
+    return res.json(recipients);
   }
 
   async store(req, res) {
