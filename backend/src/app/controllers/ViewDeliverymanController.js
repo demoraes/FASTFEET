@@ -77,6 +77,10 @@ class DeliverymanController {
       where: { id: order, deliveryman_id: id },
     });
 
+    if (!orderDelivery) {
+      return res.status(400).json({ error: 'This delivery is not you at do' });
+    }
+
     const updateOrderDelivery = await orderDelivery.update({ start_date });
 
     return res.json(updateOrderDelivery);

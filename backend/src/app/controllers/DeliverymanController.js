@@ -10,17 +10,16 @@ class DeliverymanController {
       const deliverymans = await Deliveryman.findAll();
 
       return res.json(deliverymans);
-    }else{
-      const deliverymans = await Deliveryman.findAll({
-        where: {
-          name: {
-            [Op.iLike]: deliveryman_query
-          }
-        },
-      });
-
-      return res.json(deliverymans);
     }
+    const deliverymans = await Deliveryman.findAll({
+      where: {
+        name: {
+          [Op.iLike]: deliveryman_query,
+        },
+      },
+    });
+
+    return res.json(deliverymans);
   }
 
   async store(req, res) {

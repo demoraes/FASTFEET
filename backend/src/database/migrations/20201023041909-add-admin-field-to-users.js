@@ -1,6 +1,6 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.addColumn('users', 'profile', {
+    return queryInterface.addColumn('users', 'admin', {
       type: Sequelize.BOOLEAN,
       defaultValue: false,
       allowNull: false,
@@ -8,6 +8,6 @@ module.exports = {
   },
 
   down: (queryInterface) => {
-    return queryInterface.removeColumn('users', 'profile');
+    return queryInterface.removeColumn('users', 'admin');
   },
 };

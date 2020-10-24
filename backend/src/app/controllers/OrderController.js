@@ -1,8 +1,8 @@
 import * as Yup from 'yup';
 import { parseISO, format } from 'date-fns';
 import pt from 'date-fns/locale/pt';
-import Order from '../models/Order';
 import { Op } from 'sequelize';
+import Order from '../models/Order';
 import Notification from '../schemas/Notification';
 import Recipients from '../models/Recipients';
 import Deliveryman from '../models/Deliveryman';
@@ -18,48 +18,47 @@ class OrderController {
       const ordes = await Order.findAll({
         limit: 5,
         offset: (page - 1) * 5,
-        attributes: ['id', 'product'],
+        attributes: ['id', 'product', 'canceled_at', 'start_date', 'end_date'],
         include: [
           {
             model: Deliveryman,
             as: 'deliveryman',
-            attributes: ['id', 'name'],
+            attributes: ['id', 'name', 'avatar_id'],
           },
           {
             model: Recipients,
             as: 'recipient',
-            attributes: ['id', 'name'],
+            attributes: ['id', 'name', 'city', 'state'],
           },
         ],
-      });
-
-      return res.json(ordes);
-    } else {
-      const ordes = await Order.findAll({
-        limit: 5,
-        offset: (page - 1) * 5,
-        attributes: ['id', 'product'],
-        include: [
-          {
-            model: Deliveryman,
-            as: 'deliveryman',
-            attributes: ['id', 'name'],
-          },
-          {
-            model: Recipients,
-            as: 'recipient',
-            attributes: ['id', 'name'],
-          },
-        ],
-        where: {
-          product: {
-            [Op.iLike]: query_product
-          }
-        },
       });
 
       return res.json(ordes);
     }
+    const ordes = await Order.findAll({
+      limit: 5,
+      offset: (page - 1) * 5,
+      attributes: ['id', 'product'],
+      include: [
+        {
+          model: Deliveryman,
+          as: 'deliveryman',
+          attributes: ['id', 'name'],
+        },
+        {
+          model: Recipients,
+          as: 'recipient',
+          attributes: ['id', 'name'],
+        },
+      ],
+      where: {
+        product: {
+          [Op.iLike]: query_product,
+        },
+      },
+    });
+
+    return res.json(ordes);
   }
 
   async store(req, res) {
