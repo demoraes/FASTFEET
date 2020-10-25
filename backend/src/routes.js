@@ -71,7 +71,7 @@ routes.delete(
  */
 routes.get('/order', OrderController.index);
 routes.post('/order', OrderController.store);
-routes.put('/order/:id', OrderController.update);
+routes.put('/order/edit/:id', OrderController.update);
 routes.delete('/order/:id', OrderController.delete);
 
 routes.get('/notifications', NotificationsController.index);

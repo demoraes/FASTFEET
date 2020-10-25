@@ -18,7 +18,14 @@ class OrderController {
       const ordes = await Order.findAll({
         limit: 5,
         offset: (page - 1) * 5,
-        attributes: ['id', 'product', 'canceled_at', 'start_date', 'end_date'],
+        attributes: [
+          'id',
+          'product',
+          'canceled_at',
+          'start_date',
+          'end_date',
+          'signature_id',
+        ],
         include: [
           {
             model: Deliveryman,
@@ -28,7 +35,15 @@ class OrderController {
           {
             model: Recipients,
             as: 'recipient',
-            attributes: ['id', 'name', 'city', 'state'],
+            attributes: [
+              'id',
+              'name',
+              'city',
+              'state',
+              'street',
+              'number',
+              'zip_code',
+            ],
           },
         ],
       });

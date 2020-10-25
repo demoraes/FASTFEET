@@ -19,7 +19,7 @@ class Deliveryman extends Model {
    * Relacionamento entre deliveryman e file através do campo avatar_id
    */
   static associate(models) {
-    this.belongsTo(models.File, { foreignKey: 'avatar_id' });
+    this.belongsTo(models.File, { foreignKey: 'avatar_id', as: 'avatar' });
   }
 }
 

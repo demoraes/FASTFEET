@@ -1,6 +1,10 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
+import { toast } from 'react-toastify';
+
 import {
   MdMoreHoriz,
   MdVisibility,
@@ -8,11 +12,41 @@ import {
   MdDeleteForever,
 } from 'react-icons/md';
 
+import api from '../../../../services/api';
+
 import TableAction from '../../../../components/Table/TableAction';
 import { Container } from './styles';
 
-function Action({ page }) {
+function Action({ page, handleDetail, id, order }) {
   const [visible, setVisible] = useState(false);
+
+  async function handleDelete() {
+    try {
+      await api.delete(`/order/${id}`);
+
+      toast.success(`Item #${id} deletado com sucesso`);
+    } catch (error) {
+      toast.error('Ocorreu um erro ao tentar excluir o item');
+    }
+  }
+
+  function confirmDelete() {
+    confirmAlert({
+      title: 'Alerta',
+      message: `Tem certeza que deseja deletar a encomenda ${id}?`,
+      closeOnEscape: false,
+      closeOnClickOutside: false,
+      buttons: [
+        {
+          label: 'Sim',
+          onClick: () => handleDelete(),
+        },
+        {
+          label: 'Não',
+        },
+      ],
+    });
+  }
 
   function handleVisible() {
     setVisible(!visible);
@@ -26,7 +60,7 @@ function Action({ page }) {
 
       <TableAction visible={visible}>
         <div>
-          <button type="button">
+          <button type="button" onClick={() => handleDetail(order)}>
             <MdVisibility size={30} color="#8E5BE8" />
             Visualizar
           </button>
@@ -38,7 +72,7 @@ function Action({ page }) {
           </Link>
         </div>
         <div>
-          <button type="button">
+          <button type="button" onClick={confirmDelete}>
             <MdDeleteForever size={30} color="#DE3B3B" />
             Excluir
           </button>
