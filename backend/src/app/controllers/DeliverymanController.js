@@ -18,6 +18,7 @@ class DeliverymanController {
           [Op.iLike]: deliveryman_query,
         },
       },
+      attributes: ['id', 'name', 'email'],
       include: [
         {
           model: File,

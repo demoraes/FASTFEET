@@ -102,7 +102,10 @@ function OrderList() {
               <td>
                 <div>
                   <img
-                    src="https://avatars2.githubusercontent.com/u/20407168?s=460&u=818190c63bbd10d67f40e6c2ece393d8cda17e03&v=4"
+                    src={
+                      order.deliveryman.avatar.url ||
+                      'https://avatars2.githubusercontent.com/u/20407168?s=460&u=818190c63bbd10d67f40e6c2ece393d8cda17e03&v=4'
+                    }
                     alt="Gabriel Moraes"
                   />
                   {order.deliveryman.name}

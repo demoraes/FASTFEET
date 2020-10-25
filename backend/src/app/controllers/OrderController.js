@@ -6,6 +6,7 @@ import Order from '../models/Order';
 import Notification from '../schemas/Notification';
 import Recipients from '../models/Recipients';
 import Deliveryman from '../models/Deliveryman';
+import File from '../models/File';
 
 import Delivery from '../jobs/Delivery';
 import Queue from '../../lib/Queue';
@@ -18,19 +19,19 @@ class OrderController {
       const ordes = await Order.findAll({
         limit: 5,
         offset: (page - 1) * 5,
-        attributes: [
-          'id',
-          'product',
-          'canceled_at',
-          'start_date',
-          'end_date',
-          'signature_id',
-        ],
+        attributes: ['id', 'product', 'canceled_at', 'start_date', 'end_date'],
         include: [
           {
             model: Deliveryman,
             as: 'deliveryman',
-            attributes: ['id', 'name', 'avatar_id'],
+            attributes: ['id', 'name', 'email'],
+            include: [
+              {
+                model: File,
+                as: 'avatar',
+                attributes: ['name', 'path', 'url'],
+              },
+            ],
           },
           {
             model: Recipients,
@@ -44,6 +45,11 @@ class OrderController {
               'number',
               'zip_code',
             ],
+          },
+          {
+            model: File,
+            as: 'signature',
+            attributes: ['name', 'path', 'url'],
           },
         ],
       });
