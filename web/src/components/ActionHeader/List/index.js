@@ -21,7 +21,7 @@ function HeaderList({ lowercaseTitle, page, visible, search, setSearch }) {
           />
         </SearchBar>
         <Link to={`/${page}`}>
-          <MdAdd size={22} color="#000" />
+          <MdAdd size={22} color="#fff" />
           CADASTRAR
         </Link>
       </div>
