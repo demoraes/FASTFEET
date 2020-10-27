@@ -3,6 +3,7 @@ import { format, parseISO } from 'date-fns';
 
 import { toast } from 'react-toastify';
 import { TableContainer } from '../../../components/Table';
+import { HeaderList } from '../../../components/ActionHeader';
 import Action from './Action';
 import Details from './Details';
 
@@ -13,6 +14,7 @@ import { Status } from './styles';
 function OrderList() {
   const [orders, setOrders] = useState([]);
   const [orderDetail, setOrderDetail] = useState([]);
+  const [search, setSearch] = useState('');
   const [visible, setVisible] = useState(false);
 
   const getFormattedStatus = (order) => {
@@ -41,7 +43,11 @@ function OrderList() {
   useEffect(() => {
     async function loadOrders() {
       try {
-        const response = await api.get('order');
+        const response = await api.get('order', {
+          params: {
+            query_product: search,
+          },
+        });
 
         const data = response.data.map((order) => {
           return {
@@ -69,7 +75,7 @@ function OrderList() {
     }
 
     loadOrders();
-  }, [orders]);
+  }, [orders, search]);
 
   function handleVisible() {
     setVisible(!visible);
@@ -82,6 +88,14 @@ function OrderList() {
 
   return (
     <>
+      <HeaderList
+        lowercaseTitle="encomendas"
+        page="order/new"
+        visible
+        search={search}
+        setSearch={setSearch}
+      />
+
       <TableContainer>
         <thead>
           <tr>

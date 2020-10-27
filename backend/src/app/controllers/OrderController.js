@@ -59,22 +59,42 @@ class OrderController {
     const ordes = await Order.findAll({
       limit: 5,
       offset: (page - 1) * 5,
-      attributes: ['id', 'product'],
+      attributes: ['id', 'product', 'canceled_at', 'start_date', 'end_date'],
       include: [
         {
           model: Deliveryman,
           as: 'deliveryman',
-          attributes: ['id', 'name'],
+          attributes: ['id', 'name', 'email'],
+          include: [
+            {
+              model: File,
+              as: 'avatar',
+              attributes: ['name', 'path', 'url'],
+            },
+          ],
         },
         {
           model: Recipients,
           as: 'recipient',
-          attributes: ['id', 'name'],
+          attributes: [
+            'id',
+            'name',
+            'city',
+            'state',
+            'street',
+            'number',
+            'zip_code',
+          ],
+        },
+        {
+          model: File,
+          as: 'signature',
+          attributes: ['name', 'path', 'url'],
         },
       ],
       where: {
         product: {
-          [Op.iLike]: query_product,
+          [Op.iLike]: `%${query_product}%`,
         },
       },
     });
