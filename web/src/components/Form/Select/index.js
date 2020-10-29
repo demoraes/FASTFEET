@@ -43,8 +43,8 @@ function SelectComponent({
         isSearchable={false}
         options={options}
         onChange={onChange}
-        defaultValue={defaultValue}
         placeholder={placeholder}
+        defaultValue={defaultValue}
         theme={(theme) => ({
           ...theme,
           colors: {

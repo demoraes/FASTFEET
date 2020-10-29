@@ -71,6 +71,7 @@ routes.delete(
  */
 routes.get('/order', OrderController.index);
 routes.post('/order', OrderController.store);
+routes.get('/order/:id', OrderController.show);
 routes.put('/order/edit/:id', OrderController.update);
 routes.delete('/order/:id', OrderController.delete);
 

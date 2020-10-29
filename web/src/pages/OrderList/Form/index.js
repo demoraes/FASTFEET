@@ -1,34 +1,42 @@
 /* eslint-disable no-inner-declarations */
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import PropTypes from 'prop-types';
 
-import { FormContainer, Select, Input } from '../../../components/Form';
+import {
+  FormContainer,
+  Select,
+  Input,
+  FormLoading,
+} from '../../../components/Form';
 import { HeaderForm } from '../../../components/ActionHeader';
 
 import { SelectContainer } from './styles';
 
 import api from '../../../services/api';
 
-function OrderForm({ match }) {
+export default function OrderForm({ match }) {
   const { id } = match.params;
 
+  const [orders, setOrders] = useState({});
   const [recipients, setRecipients] = useState([]);
-  const [orders, setOrders] = useState([]);
   const [deliveryman, setDeliveryman] = useState([]);
   const [selectedRecipient, setSelectedRecipient] = useState([]);
   const [selectedDeliveryman, setSelectedDeliveryman] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (id) {
-      async function loadDeliveryDetails() {
+      async function loadOrdersDetails() {
         try {
+          setLoading(true);
           const response = await api.get(`/order/${id}`);
 
-          console.tron.log(response);
-
           setOrders(response.data);
-          setSelectedDeliveryman(response.data.recipient);
-          setSelectedRecipient(response.data.deliveryman);
+          setSelectedDeliveryman(response.data.deliveryman);
+          setSelectedRecipient(response.data.recipient);
+
+          setLoading(false);
         } catch (info) {
           toast.info(
             'Escolha os dados que deseja atualizar da encomenda escolhida'
@@ -36,7 +44,8 @@ function OrderForm({ match }) {
         }
       }
 
-      loadDeliveryDetails();
+      loadOrdersDetails();
+      // console.tron.log(selectedRecipient);
     }
   }, [id]);
 
@@ -63,7 +72,7 @@ function OrderForm({ match }) {
     return data;
   });
 
-  const deliveryOptions = deliveryman.map((recipient) => {
+  const deliverymanOptions = deliveryman.map((recipient) => {
     const data = {
       value: recipient,
       label: recipient.name,
@@ -73,38 +82,59 @@ function OrderForm({ match }) {
   });
 
   return (
-    <FormContainer>
-      <HeaderForm id={id} prevPage="/orders" title="encomendas" />
-
-      <section>
-        <SelectContainer>
-          <Select
-            name="recipient.name"
-            label="Distinatário"
-            placeholder="Selecione um destinatário"
-            options={recipientsOptions}
-            defaultValue={{
-              value: selectedRecipient.id,
-              label: selectedRecipient.name,
-            }}
+    <>
+      {loading ? (
+        <FormLoading />
+      ) : (
+        <FormContainer initialData={orders}>
+          <HeaderForm
+            id={id}
+            prevPage="/orders"
+            title="encomendas"
+            loading={loading}
           />
 
-          <Select
-            name="order.name"
-            label="Entregador"
-            placeholder="Selecione um entregador"
-            options={deliveryOptions}
-          />
+          <section>
+            <SelectContainer>
+              <Select
+                name="recipient.name"
+                label="Distinatário"
+                placeholder="Selecione um destinatário"
+                options={recipientsOptions}
+                defaultValue={{
+                  value: selectedRecipient.id,
+                  label: selectedRecipient.name,
+                }}
+              />
 
-          <Input
-            name="product"
-            label="Nome do produto"
-            placeholder="Ex: Notebook"
-          />
-        </SelectContainer>
-      </section>
-    </FormContainer>
+              <Select
+                name="order.deliveryman.name"
+                label="Entregador"
+                placeholder="Selecione um entregador"
+                options={deliverymanOptions}
+                defaultValue={{
+                  label: selectedDeliveryman.name,
+                  value: selectedDeliveryman.id,
+                }}
+              />
+
+              <Input
+                name="product"
+                label="Nome do produto"
+                placeholder="Ex: Notebook"
+              />
+            </SelectContainer>
+          </section>
+        </FormContainer>
+      )}
+    </>
   );
 }
 
-export default OrderForm;
+OrderForm.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.node,
+    }).isRequired,
+  }).isRequired,
+};

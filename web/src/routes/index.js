@@ -19,7 +19,7 @@ export default function Routes() {
 
       <Route path="/orders" component={OrderList} isPrivate />
       <Route path="/order/new" component={OrderForm} isPrivate />
-      <Route path="/order/edit" component={OrderForm} isPrivate />
+      <Route path="/order/edit/:id" component={OrderForm} isPrivate />
       <Route path="/profile" component={Profile} isPrivate />
       <Route path="/recipients" component={Recipients} isPrivate />
       <Route path="/problems" component={Problems} isPrivate />

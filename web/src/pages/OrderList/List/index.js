@@ -45,6 +45,7 @@ function OrderList() {
       try {
         const response = await api.get('order', {
           params: {
+            page: 1,
             query_product: search,
           },
         });
@@ -75,7 +76,7 @@ function OrderList() {
     }
 
     loadOrders();
-  }, [orders, search]);
+  }, [search]);
 
   function handleVisible() {
     setVisible(!visible);
@@ -120,7 +121,7 @@ function OrderList() {
                       order.deliveryman.avatar.url ||
                       'https://avatars2.githubusercontent.com/u/20407168?s=460&u=818190c63bbd10d67f40e6c2ece393d8cda17e03&v=4'
                     }
-                    alt="Gabriel Moraes"
+                    alt="Avatar"
                   />
                   {order.deliveryman.name}
                 </div>
