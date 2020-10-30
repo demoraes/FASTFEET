@@ -6,12 +6,14 @@ import { TableContainer } from '../../../components/Table';
 import { HeaderList } from '../../../components/ActionHeader';
 import Action from './Action';
 import Details from './Details';
+import Pagination from '../../../components/Pagination';
 
 import api from '../../../services/api';
 
 import { Status } from './styles';
 
 function OrderList() {
+  const [currentPage, setCurrentPage] = useState(1);
   const [orders, setOrders] = useState([]);
   const [orderDetail, setOrderDetail] = useState([]);
   const [search, setSearch] = useState('');
@@ -45,7 +47,7 @@ function OrderList() {
       try {
         const response = await api.get('order', {
           params: {
-            page: 1,
+            page: currentPage,
             query_product: search,
           },
         });
@@ -76,7 +78,11 @@ function OrderList() {
     }
 
     loadOrders();
-  }, [search]);
+  }, [currentPage, search]);
+
+  function handlePage(page) {
+    setCurrentPage(1);
+  }
 
   function handleVisible() {
     setVisible(!visible);
@@ -110,24 +116,24 @@ function OrderList() {
           </tr>
         </thead>
         <tbody>
-          {orders.map((order) => (
+          {orders.map(({ deliveryman, recipient, ...order }) => (
             <tr key={order.id}>
               <td>#{order.id}</td>
-              <td>{order.recipient.name}</td>
+              <td>{recipient.name}</td>
               <td>
                 <div>
                   <img
                     src={
-                      order.deliveryman.avatar.url ||
+                      deliveryman.avatar.url ||
                       'https://avatars2.githubusercontent.com/u/20407168?s=460&u=818190c63bbd10d67f40e6c2ece393d8cda17e03&v=4'
                     }
                     alt="Avatar"
                   />
-                  {order.deliveryman.name}
+                  {deliveryman.name}
                 </div>
               </td>
-              <td>{order.recipient.city}</td>
-              <td>{order.recipient.state}</td>
+              <td>{recipient.city}</td>
+              <td>{recipient.state}</td>
               <td>
                 <Status status={order.formattedStatus}>
                   <span>{order.formattedStatus.text}</span>
@@ -149,6 +155,8 @@ function OrderList() {
         order={orderDetail}
         handleVisible={handleVisible}
       />
+
+      <Pagination handlePage={handlePage} />
     </>
   );
 }

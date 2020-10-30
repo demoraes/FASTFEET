@@ -115,8 +115,8 @@ class OrderController {
       return res.status(400).json({ error: 'Validation fails' });
     }
 
-    const { signature_id, recipient_id, deliveryman_id } = req.query;
-    const { product, date } = req.body;
+    const { signature_id } = req.query;
+    const { product, recipient_id, deliveryman_id, date } = req.body;
 
     /**
      * Criação da encomenda

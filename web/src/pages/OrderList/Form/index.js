@@ -24,6 +24,7 @@ export default function OrderForm({ match }) {
   const [selectedRecipient, setSelectedRecipient] = useState([]);
   const [selectedDeliveryman, setSelectedDeliveryman] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -72,6 +73,14 @@ export default function OrderForm({ match }) {
     return data;
   });
 
+  const handleChangeRecipient = (selectedOption) => {
+    const { value } = selectedOption;
+
+    console.tron.log(value);
+
+    setSelectedRecipient(value);
+  };
+
   const deliverymanOptions = deliveryman.map((recipient) => {
     const data = {
       value: recipient,
@@ -81,12 +90,48 @@ export default function OrderForm({ match }) {
     return data;
   });
 
+  const handleChangeDeliveryman = (selectedOption) => {
+    const { value } = selectedOption;
+    console.tron.log(value);
+
+    setSelectedDeliveryman(value);
+  };
+
+  async function handleSubmit({ product, recipient_id, deliveryman_id }) {
+    try {
+      setButtonLoading(true);
+
+      if (id) {
+        // deliverymans_id = selectedDeliveryman.id;
+        // recipients_id = selectedRecipient.id;
+        // const data = { product, deliverymans_id, recipients_id };
+        // api.put(`/order/${id}`, data);
+      }
+
+      if (!id) {
+        console.tron.log(deliveryman_id);
+        deliveryman_id = selectedDeliveryman.id;
+        recipient_id = selectedRecipient.id;
+        const data = { product, recipient_id, deliveryman_id };
+        await api.post('/order', data);
+      }
+
+      setButtonLoading(false);
+    } catch (error) {
+      toast.error('Algo deu errado ao salvar a encomenda');
+    }
+  }
+
   return (
     <>
       {loading ? (
         <FormLoading />
       ) : (
-        <FormContainer initialData={orders}>
+        <FormContainer
+          onSubmit={handleSubmit}
+          initialData={orders}
+          loading={buttonLoading}
+        >
           <HeaderForm
             id={id}
             prevPage="/orders"
@@ -105,10 +150,11 @@ export default function OrderForm({ match }) {
                   value: selectedRecipient.id,
                   label: selectedRecipient.name,
                 }}
+                onChange={handleChangeRecipient}
               />
 
               <Select
-                name="order.deliveryman.name"
+                name="deliveryman.name"
                 label="Entregador"
                 placeholder="Selecione um entregador"
                 options={deliverymanOptions}
@@ -116,14 +162,15 @@ export default function OrderForm({ match }) {
                   label: selectedDeliveryman.name,
                   value: selectedDeliveryman.id,
                 }}
-              />
-
-              <Input
-                name="product"
-                label="Nome do produto"
-                placeholder="Ex: Notebook"
+                onChange={handleChangeDeliveryman}
               />
             </SelectContainer>
+
+            <Input
+              name="product"
+              label="Nome do produto"
+              placeholder="Ex: Notebook"
+            />
           </section>
         </FormContainer>
       )}
