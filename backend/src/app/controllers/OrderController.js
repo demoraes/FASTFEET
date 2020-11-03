@@ -13,13 +13,17 @@ import Queue from '../../lib/Queue';
 
 class OrderController {
   async index(req, res) {
-    const { page = 1, query_product } = req.query;
+    const { page = 1, query_product, limit = 5 } = req.query;
+    const where = {};
+
+    const total = await Order.count({ where });
 
     if (!query_product) {
-      const ordes = await Order.findAll({
-        limit: 5,
-        offset: (page - 1) * 5,
+      const orders = await Order.findAll({
+        where,
         attributes: ['id', 'product', 'canceled_at', 'start_date', 'end_date'],
+        limit,
+        offset: (page - 1) * limit,
         include: [
           {
             model: Deliveryman,
@@ -54,7 +58,13 @@ class OrderController {
         ],
       });
 
-      return res.json(ordes);
+      return res.json({
+        limit,
+        page: Number(page),
+        pages: Math.ceil(total / limit),
+        total,
+        orders,
+      });
     }
 
     const ordes = await Order.findAll({

@@ -1,5 +1,5 @@
 import TableContainer from './TableContainer';
 // import TableAction from './TableAction';
-// import TableLoading from './TableLoading';
+import TableLoading from './TableLoading';
 
-export { TableContainer };
+export { TableContainer, TableLoading };

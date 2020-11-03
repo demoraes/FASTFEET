@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { format, parseISO } from 'date-fns';
 
 import { toast } from 'react-toastify';
-import { TableContainer } from '../../../components/Table';
+import { TableContainer, TableLoading } from '../../../components/Table';
 import { HeaderList } from '../../../components/ActionHeader';
 import Action from './Action';
 import Details from './Details';
@@ -14,10 +14,13 @@ import { Status } from './styles';
 
 function OrderList() {
   const [currentPage, setCurrentPage] = useState(1);
+  const [pages, setPages] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [totalOrders, setTotalOrders] = useState(null);
   const [orderDetail, setOrderDetail] = useState([]);
   const [search, setSearch] = useState('');
   const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const getFormattedStatus = (order) => {
     let status = {};
@@ -45,6 +48,8 @@ function OrderList() {
   useEffect(() => {
     async function loadOrders() {
       try {
+        setLoading(true);
+
         const response = await api.get('order', {
           params: {
             page: currentPage,
@@ -52,7 +57,7 @@ function OrderList() {
           },
         });
 
-        const data = response.data.map((order) => {
+        const data = response.data.orders.map((order) => {
           return {
             ...order,
             formattedStatus: getFormattedStatus(order),
@@ -71,6 +76,10 @@ function OrderList() {
           toast.warn('Nenhuma encomenda cadastrada');
         }
 
+        console.tron.log(response.data.total);
+        setLoading(false);
+        setPages(response.data.pages);
+        setTotalOrders(response.data.total);
         setOrders(data);
       } catch (error) {
         toast.error('Não foi possível carregar as informações das encomendas');
@@ -81,7 +90,13 @@ function OrderList() {
   }, [currentPage, search]);
 
   function handlePage(page) {
-    setCurrentPage(1);
+    if (page === 0) {
+      setCurrentPage(1);
+    } else if (page > pages) {
+      setCurrentPage(pages);
+    } else {
+      setCurrentPage(page);
+    }
   }
 
   function handleVisible() {
@@ -103,60 +118,71 @@ function OrderList() {
         setSearch={setSearch}
       />
 
-      <TableContainer>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Destinatário</th>
-            <th>Entregador</th>
-            <th>Cidade</th>
-            <th>Estado</th>
-            <th>Status</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map(({ deliveryman, recipient, ...order }) => (
-            <tr key={order.id}>
-              <td>#{order.id}</td>
-              <td>{recipient.name}</td>
-              <td>
-                <div>
-                  <img
-                    src={
-                      deliveryman.avatar.url ||
-                      'https://avatars2.githubusercontent.com/u/20407168?s=460&u=818190c63bbd10d67f40e6c2ece393d8cda17e03&v=4'
-                    }
-                    alt="Avatar"
+      {loading ? (
+        <TableLoading />
+      ) : (
+        <>
+          <TableContainer>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Destinatário</th>
+                <th>Entregador</th>
+                <th>Cidade</th>
+                <th>Estado</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map(({ deliveryman, recipient, ...order }) => (
+                <tr key={order.id}>
+                  <td>#{order.id}</td>
+                  <td>{recipient.name}</td>
+                  <td>
+                    <div>
+                      <img
+                        src={
+                          deliveryman.avatar.url ||
+                          'https://avatars2.githubusercontent.com/u/20407168?s=460&u=818190c63bbd10d67f40e6c2ece393d8cda17e03&v=4'
+                        }
+                        alt="Avatar"
+                      />
+                      {deliveryman.name}
+                    </div>
+                  </td>
+                  <td>{recipient.city}</td>
+                  <td>{recipient.state}</td>
+                  <td>
+                    <Status status={order.formattedStatus}>
+                      <span>{order.formattedStatus.text}</span>
+                    </Status>
+                  </td>
+                  <Action
+                    page={`/order/edit/${order.id}`}
+                    handleDetail={() => handleDetail(order)}
+                    id={order.id}
+                    order={orderDetail}
                   />
-                  {deliveryman.name}
-                </div>
-              </td>
-              <td>{recipient.city}</td>
-              <td>{recipient.state}</td>
-              <td>
-                <Status status={order.formattedStatus}>
-                  <span>{order.formattedStatus.text}</span>
-                </Status>
-              </td>
-              <Action
-                page={`/order/edit/${order.id}`}
-                handleDetail={() => handleDetail(order)}
-                id={order.id}
-                order={orderDetail}
-              />
-            </tr>
-          ))}
-        </tbody>
-      </TableContainer>
+                </tr>
+              ))}
+            </tbody>
+          </TableContainer>
 
-      <Details
-        visible={visible}
-        order={orderDetail}
-        handleVisible={handleVisible}
-      />
+          <Details
+            visible={visible}
+            order={orderDetail}
+            handleVisible={handleVisible}
+          />
 
-      <Pagination handlePage={handlePage} />
+          <Pagination
+            currentPage={currentPage}
+            pages={pages}
+            totalDocs={totalOrders}
+            handlePage={handlePage}
+          />
+        </>
+      )}
     </>
   );
 }
