@@ -25,6 +25,10 @@ function Action({ page, handleDetail, id, order }) {
       await api.delete(`/order/${id}`);
 
       toast.success(`Item #${id} deletado com sucesso`);
+
+      setTimeout(function () {
+        document.location.reload(true);
+      }, 3000);
     } catch (error) {
       toast.error('Ocorreu um erro ao tentar excluir o item');
     }
